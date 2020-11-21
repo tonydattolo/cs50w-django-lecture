@@ -1,0 +1,18 @@
+{% extends 'tasks/layout.html' %}
+
+
+{% block body %}
+<h1>Tasks</h1>
+    <ul>
+        {% for task in tasks %}
+            <li>{{ task }}</li>
+
+            <!-- django allows inside of for loops to allow for a condition where
+                 if the list is empty, do this action instead -->
+        {% empty %}
+            <li>No Tasks!</li>
+        {% endfor %}
+    </ul>
+
+    <a href="{% url 'tasks:addTask' %}">Add a Task</a>
+{% endblock %}
