@@ -2,10 +2,10 @@ from django.urls import path
 
 from . import views
 
-
-# app_name = "encyclopedia"
+app_name = "wiki"
 urlpatterns = [
+    # ex: /encyclopedia/
     path("", views.index, name="index"),
-    path("createNewPage", views.createNewPage, name="createNewPage"),
-    path("<str:entryName>", views.displayEntryPage, name="displayEntryName")
+    # ex: /encyclopedia/EntryPageName
+    path("wiki/<str:entry>/", views.displayEntry, name="displayEntry")
 ]

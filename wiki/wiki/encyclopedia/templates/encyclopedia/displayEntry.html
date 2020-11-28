@@ -1,7 +1,18 @@
-{% extends 'encyclopedia/layout.html' %}
+{% extends "encyclopedia/layout.html" %}
+
+{% block title %}
+    {% if entryTitle %}
+        {{ entryTitle }}
+    {% else %}
+        Page Not Found!
+    {% endif %}
+{% endblock %}
 
 {% block body %}
-
-    {{ entryName }}
-    
+    {% if entryHTML %}
+        {{ entryHTML|safe }}
+    {% else %}
+        <p>This page does not exist yet.</p>
+        <p>Check your spelling or create a new entry!</p>
+    {% endif %}
 {% endblock %}

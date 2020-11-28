@@ -5,12 +5,25 @@
 {% endblock %}
 
 {% block body %}
-    <h1>All Pages</h1>
 
-    <ul>
-        {% for entry in entries %}
-            <li><a href="">{{ entry }}</a></li>
-        {% endfor %}
-    </ul>
+    {% if allEntries %}
+        <h1>All Pages</h1>
+
+        <ul>
+            {% for entry in allEntries %}
+                <!-- <li><a href="/encyclopedia/{{ entry.title }}">{{ entry.title }}</a></li> -->
+                <li><a href="{% url 'wiki:displayEntry' entry.title %}">{{ entry.title }}</a></li>
+            {% endfor %}
+        </ul>
+
+        {{ testMD }}
+
+        <br>
+        <br>
+
+        {{ testHTML|safe }}
+    {% else %}
+        <p>no entries yet!</p>
+    {% endif %}
 
 {% endblock %}
