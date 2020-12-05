@@ -13,6 +13,8 @@ def index(request):
 def detail(request, question_id):
     # Shortened version
     # question = get_object_or_404(Question, pk=question_id)
+    # syntax     get_object_or_404(Model, model attribute kwargs to check if wanted object exists) uses .get()
+    #            get_list_of_404() same but uses .filter and returns list
     try:
         question = Question.objects.get(pk=question_id)
     except Question.DoesNotExist:
