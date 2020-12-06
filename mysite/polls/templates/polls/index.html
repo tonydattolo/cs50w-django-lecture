@@ -2,15 +2,15 @@
 
 {% block body %}
 
-{% if latestQuestions %}
-    <ul>
-        {% for question in latestQuestions %}
-        <li><a href="url 'polls:detail' question.id ">{{ question.questionText }}</a></li>
-        {% endfor %}
-    </ul>
+    {% if latestQuestions %}
+        <ul>
+            {% for question in latestQuestions %}
+            <li><a href="{% url 'polls:detail' question.id %}">{{ question.questionText }}</a></li>
+            {% endfor %}
+        </ul>
 
-{% else %}
-    <p>No polls are available.</p>
-{% endif %}
+    {% else %}
+        <p>No polls are available.</p>
+    {% endif %}
 
 {% endblock %}
