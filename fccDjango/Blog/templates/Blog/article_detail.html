@@ -1,0 +1,10 @@
+{% extends 'Blog/layout.html' %}
+
+{% block title %}
+    Article: {{ object.title }}
+{% endblock %}
+
+{% block body %}
+    <h1>{{ object.title }}</h1>
+    <p>{{ object.content }}</p>
+{% endblock %}
