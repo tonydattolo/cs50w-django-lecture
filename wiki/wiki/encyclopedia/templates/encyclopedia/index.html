@@ -12,16 +12,10 @@
         <ul>
             {% for entry in allEntries %}
                 <!-- <li><a href="/encyclopedia/{{ entry.title }}">{{ entry.title }}</a></li> -->
-                <li><a href="{% url 'wiki:displayEntry' entry.title %}">{{ entry.title }}</a></li>
+                <li><a href="{% url 'wiki:wiki-detail' entry.title %}">{{ entry.title }}</a></li>
             {% endfor %}
         </ul>
 
-        {{ testMD }}
-
-        <br>
-        <br>
-
-        {{ testHTML|safe }}
     {% else %}
         <p>no entries yet!</p>
     {% endif %}

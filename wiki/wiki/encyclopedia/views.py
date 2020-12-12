@@ -1,12 +1,10 @@
-from mysite.polls.views import DetailView
 import re
 from django.db.models import query
 from django.db.models.query_utils import Q
 from django.http import request
-from django.shortcuts import render
+from django.shortcuts import render, get_object_or_404
 from django import forms
-from django.views.generic import ListView, FormView
-from django.views.generic.base import View
+from django.views.generic import ListView, FormView, DetailView, UpdateView, DeleteView
 
 from . import util
 from .models import Entry
@@ -15,76 +13,104 @@ import markdown2
 
 
 # can separate forms into forms.py and just import them, same as models
-class NewEntryForm(forms.Form):
-    entryTitle = forms.CharField(label="New Entry Title")
-    # entryContent = forms.CharField(
-    #     label="Entry Content in Markdown",
-    #     widget=forms.Textarea(attrs={"rows":3, "cols":5}))
-    entryContent = forms.Textarea()
-
-class SearchForm(forms.Form):
-    q = forms.CharField(label="search", max_length=64)
-
-class IndexPageView(ListView):
-    template_name = "index.html"
-    # form_class = SearchForm
-    model = Entry
-
-
-def index(request):
-    return render(request, "encyclopedia/index.html", {
-        "allEntries": Entry.objects.all(),
-        "searchbox": SearchForm()
-    })
-
-def displayEntry(request, entry):
-    try:
-        entryData = Entry.objects.get(title=entry)
-        entryTitle = entryData.title
-        entryHTML = markdown2.markdown(entryData.content)
-        return render(request, "encyclopedia/displayEntry.html", {
-            "entryTitle": entryTitle,
-            "entryHTML": entryHTML
-        })
-    except:
-        return render(request, "encyclopedia/displayEntry.html")
-
-class EntryListView(ListView):
-    model = Entry
-    paginate_by = 100
+class WikiListView(ListView):
+    queryset = Entry.objects.all()
+    template_name = "encyclopedia/index.html"
+    context_object_name = "allEntries"
     
-    def get_queryset(self):
-        queryset = super().get_queryset()
-        q = self.request.GET.get("q")
-        if q:
-            queryset = queryset.filter(title__icontains=q)
-        return queryset
+    # def get(self, request, *args, **kwargs):
+    #     context = {
+    #         "allEntries": self.queryset
+    #     }
+    #     return render(request, self.template_name, context)
 
-class EntryDetailView(DetailView):
-    model = Entry
+class WikiDetailView(DetailView):
+    template_name = "encyclopedia/wiki_detail.html"
+    queryset = Entry.objects.all()
+    context_object_name = "entryTitle"
 
-def searchView(request):
-    searchedTerm = request.GET.get('q')
-    try:
-        exactMatch = Entry.objects.get(title=searchedTerm)
-        entryTitle = exactMatch.title
-        entryHTML = markdown2.markdown(exactMatch.content)
-        return render(request, "encyclopedia/displayEntry.html", {
-            "entryTitle": entryTitle,
-            "entryHTML": entryHTML
-        })
-    except:
-        try:
-            searchResults = Entry.objects.filter(Q(title__icontains=searchedTerm))
-            return render(request, "encyclopedia/searchResults.html", {
-                "searchResults": searchResults,
-                "searchedTerm": searchedTerm
-            })
-        except:
-            return render(request, "encyclopedia/searchResults.html", {
-            "emptyResults": f"No entries found matching: {searchedTerm}",
-            "searchedTerm": searchedTerm
-        })
+    # Override default regex arg passed to url to allow for wikiEntry instead of just pk
+    def get_object(self):
+        x = self.kwargs.get("wikiEntry")
+        return get_object_or_404(Entry, title=x)
+
+    def get_context_data(self, *args, **kwargs):
+        context = super(WikiDetailView, self).get_context_data(*args,**kwargs)
+        # add extra field
+        z = Entry.objects.get(title=self.kwargs.get("wikiEntry"))
+        context["entryHTML"] = markdown2.markdown(z.content)
+        return context
+
+# class NewEntryForm(forms.Form):
+#     entryTitle = forms.CharField(label="New Entry Title")
+#     # entryContent = forms.CharField(
+#     #     label="Entry Content in Markdown",
+#     #     widget=forms.Textarea(attrs={"rows":3, "cols":5}))
+#     entryContent = forms.Textarea()
+
+# class SearchForm(forms.Form):
+#     q = forms.CharField(label="search", max_length=64)
+
+# class IndexPageView(ListView):
+#     template_name = "index.html"
+#     # form_class = SearchForm
+#     model = Entry
+
+
+# def index(request):
+#     return render(request, "encyclopedia/index.html", {
+#         "allEntries": Entry.objects.all(),
+#         "searchbox": SearchForm()
+#     })
+
+# def displayEntry(request, entry):
+#     try:
+#         entryData = Entry.objects.get(title=entry)
+#         entryTitle = entryData.title
+#         entryHTML = markdown2.markdown(entryData.content)
+#         return render(request, "encyclopedia/displayEntry.html", {
+#             "entryTitle": entryTitle,
+#             "entryHTML": entryHTML
+#         })
+#     except:
+#         return render(request, "encyclopedia/displayEntry.html")
+
+# class EntryListView(ListView):
+#     model = Entry
+#     paginate_by = 100
+    
+#     def get_queryset(self):
+#         queryset = super().get_queryset()
+#         q = self.request.GET.get("q")
+#         if q:
+#             queryset = queryset.filter(title__icontains=q)
+#         return queryset
+
+# class EntryDetailView(DetailView):
+#     model = Entry
+
+# def searchView(request):
+#     searchedTerm = request.GET.get('q')
+#     try:
+#         exactMatch = Entry.objects.get(title=searchedTerm)
+#         entryTitle = exactMatch.title
+#         entryHTML = markdown2.markdown(exactMatch.content)
+#         return render(request, "encyclopedia/displayEntry.html", {
+#             "entryTitle": entryTitle,
+#             "entryHTML": entryHTML
+#         })
+#     except:
+#         try:
+#             searchResults = Entry.objects.filter(Q(title__icontains=searchedTerm))
+#             return render(request, "encyclopedia/searchResults.html", {
+#                 "searchResults": searchResults,
+#                 "searchedTerm": searchedTerm
+#             })
+#         except:
+#             return render(request, "encyclopedia/searchResults.html", {
+#             "emptyResults": f"No entries found matching: {searchedTerm}",
+#             "searchedTerm": searchedTerm
+#         })
 
 # class SearchView(ListView):
 #     template_name = "encyclopedia/searchResults.html"

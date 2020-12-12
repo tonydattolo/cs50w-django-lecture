@@ -30,12 +30,13 @@ class ArticleCreateView(CreateView):
 class ArticleUpdateView(UpdateView):
     form_class = ArticleForm
     queryset = Article.objects.all()
-    template_name = "Blog/article_create.html"
+    template_name = "Blog/article_update.html"
 
     def form_valid(self, form):
         print(form.cleaned_data())
         return super().form_valid(form)
 
+    # same as create except here we're grabbing an instance of the object to change it
     def get_object(self):
         id_ = self.kwargs.get("id") #takes in given kwarg from the url regex, can customize
         return get_object_or_404(Article, id=id_)
@@ -46,6 +47,15 @@ class ArticleDetailView(DetailView):
     # queryset limits choices available for that detailview
     queryset = Article.objects.all()
     template_name = "Blog/article_detail.html"
+
+    def get_object(self):
+        id_ = self.kwargs.get("id") #takes in given kwarg from the url regex, can customize
+        return get_object_or_404(Article, id=id_)
+
+class ArticleDeleteView(DeleteView):
+    # queryset limits choices available for that detailview
+    queryset = Article.objects.all()
+    template_name = "Blog/article_delete.html"
 
     def get_object(self):
         id_ = self.kwargs.get("id") #takes in given kwarg from the url regex, can customize
