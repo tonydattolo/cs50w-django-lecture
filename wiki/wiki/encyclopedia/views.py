@@ -5,9 +5,12 @@ from django.http import request
 from django.shortcuts import render, get_object_or_404
 from django import forms
 from django.views.generic import ListView, FormView, DetailView, UpdateView, DeleteView
+from django.views.generic.edit import CreateView
+from django.urls import reverse
 
 from . import util
 from .models import Entry
+from .forms import EntryForm
 
 import markdown2
 
@@ -40,6 +43,43 @@ class WikiDetailView(DetailView):
         z = Entry.objects.get(title=self.kwargs.get("wikiEntry"))
         context["entryHTML"] = markdown2.markdown(z.content)
         return context
+    
+class WikiCreateView(CreateView):
+    template_name = "encyclopedia/wiki_create.html"
+    queryset = Entry.objects.all()
+    form_class = EntryForm
+
+    def form_valid(self, form):
+        print(form.cleaned_data)
+        return super().form_valid(form)
+
+class WikiUpdateView(UpdateView):
+    template_name = "encyclopedia/wiki_update.html"
+    queryset = Entry.objects.all()
+    form_class = EntryForm
+
+    def get_object(self):
+        x = self.kwargs.get("wikiEntry")
+        return get_object_or_404(Entry, title=x)
+
+    def form_valid(self, form):
+        print(form.cleaned_data)
+        return super().form_valid(form)
+
+    # Override Success Redirect:
+    # success_url = "whatever"
+    # def get_success_url(self) -> str:
+    #     return "whatever"
+
+class WikiDeleteView(DeleteView):
+    template_name = "encyclopedia/wiki_delete.html"
+
+    def get_object(self):
+        x = self.kwargs.get("wikiEntry")
+        return get_object_or_404(Entry, title=x)
+    def get_success_url(self) -> str:
+        return reverse('wiki:wiki-list')
+
 
 # class NewEntryForm(forms.Form):
 #     entryTitle = forms.CharField(label="New Entry Title")

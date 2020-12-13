@@ -10,6 +10,13 @@
 
 {% block body %}
     {% if entryHTML %}
+        <h1>{{ entryTitle }}</h1>
+        <form action="{% url 'wiki:wiki-update' entryTitle %}">
+            <button type="submit">Update</button>
+        </form>
+        <form action="{% url 'wiki:wiki-delete' entryTitle %}">
+            <button type="submit">Delete</button>
+        </form>
         {{ entryHTML|safe }}
     {% else %}
         <p>This page does not exist yet.</p>
