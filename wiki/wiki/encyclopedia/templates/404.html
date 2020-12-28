@@ -1,0 +1,11 @@
+<!-- template code: 404.html -->
+{% extends "encyclopedia/layout.html" %}
+{% block title %}
+    Page Not Found!
+{% endblock %}
+
+{% block body %}
+    <b>{{ request.path|slice:"6:-1" }} does not exist yet!</b>
+    <br>    
+    <a href="{% url 'wiki:wiki-create' %}">Create New Page</a>
+{% endblock %}

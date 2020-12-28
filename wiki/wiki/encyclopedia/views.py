@@ -44,6 +44,7 @@ class WikiDetailView(DetailView):
         context["entryHTML"] = markdown2.markdown(z.content)
         return context
     
+    
 class WikiCreateView(CreateView):
     template_name = "encyclopedia/wiki_create.html"
     queryset = Entry.objects.all()
@@ -52,6 +53,24 @@ class WikiCreateView(CreateView):
     def form_valid(self, form):
         print(form.cleaned_data)
         return super().form_valid(form)
+
+    # Customizing GET and POST methods, inherited from View class
+
+    # def get(self, request, id=None, *args, **kwargs):
+    #     form = EntryForm()
+    #     context = {
+    #         "form": form
+    #     }
+    #     return render(request, self.template_name, context)
+    # def post(self, request, *args, **kwargs):
+    #     form = EntryForm(request.POST)
+    #     if form.is_valid():
+    #         form.save()
+    #     context = {
+    #         "form": form
+    #     }
+    #     return render(request, self.template_name, context)
+
 
 class WikiUpdateView(UpdateView):
     template_name = "encyclopedia/wiki_update.html"
@@ -62,14 +81,27 @@ class WikiUpdateView(UpdateView):
         x = self.kwargs.get("wikiEntry")
         return get_object_or_404(Entry, title=x)
 
-    def form_valid(self, form):
-        print(form.cleaned_data)
-        return super().form_valid(form)
+    # def form_valid(self, form):
+    #     print(form.cleaned_data)
+    #     return super().form_valid(form)
 
     # Override Success Redirect:
     # success_url = "whatever"
     # def get_success_url(self) -> str:
     #     return "whatever"
+
+    # populating with existing data?
+    # def render_initial_data(self, request, *args, **kwargs):
+    #     initial_data = {
+    #         "title": "fill",
+    #         "content": "fill"
+    #     }
+    #     obj = Entry.objects.get(title=self.kwargs.get("idk"))
+    #     form = EntryForm(request.POST, initial=initial_data, initial=obj)
+    #     context = {
+    #         "form": form
+    #     }
+    #     return render(request, self.template_name, context)
 
 class WikiDeleteView(DeleteView):
     template_name = "encyclopedia/wiki_delete.html"

@@ -25,3 +25,19 @@ class EntryForm(forms.ModelForm):
             'title',
             'content'
         ]
+    
+    # custom form validation
+    # def clean_<myFieldName>():
+    # def clean_title(self, *args, **kwargs):
+    #     title = self.cleaned_data.get("title")
+    #     if not "cfe" in title:
+    #         raise forms.ValidationError("this is not a valid title! must contain 'cfe' ")
+    #     if not "whatever" in title:
+    #         raise forms.ValidationError("error: title must contain 'whatever' ")
+    #     return title
+
+    # def clean_email(self, *args, **kwargs):
+    #     email = self.cleaned_data.get("email")
+    #     if not email.contains(".edu"):
+    #         raise form.ValidationError("must be a student email address!")
+    #     return email

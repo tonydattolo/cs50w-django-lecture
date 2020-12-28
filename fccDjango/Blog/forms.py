@@ -61,4 +61,10 @@ class RawArticleForm(forms.Form):
                                 "rows": 10,
                                 "cols": 20
                             })) #change to text area through widget prop, .TextField doesn't exist for form
-    
+
+# class CourseModelForm(forms.ModelForm):
+#     class Meta:
+#         model = Course
+#         fields = [
+#             'title'
+#         ]

@@ -27,6 +27,21 @@ class ArticleCreateView(CreateView):
     # def get_success_url(self) -> str:
     #     return '/'
 
+# Raw Create View
+class CourseCreateView(View):
+    template_name = "Blog/course_create.html"
+    
+    def get(self, request, id=None, *args, **kwargs):
+        # GET method
+        context = {}
+        return render(request, self.template_name, context)
+    
+    def post(self, request, id=None, *args, **kwargs):
+        # POST method
+        context = {}
+        
+    
+
 class ArticleUpdateView(UpdateView):
     form_class = ArticleForm
     queryset = Article.objects.all()

@@ -6,12 +6,12 @@
 
 {% block body %}
 
-<form action="." method="POST">
+<form action="" method="POST">
     {% csrf_token %}
     <h2>Do you want to delete the entry: {{ object.title }}</h2>
     <p>
-        <input type="submit" value="Yes">
-        <a href="../">Cancel</a>
+        <input type="submit" value="Yes" />
+        <a href="{% url 'wiki:wiki-detail' object.title %}">Cancel</a>
     </p>
 </form>
 
