@@ -2,7 +2,7 @@ import re
 from django.db.models import query
 from django.db.models.query_utils import Q
 from django.http import request
-from django.shortcuts import render, get_object_or_404
+from django.shortcuts import render, get_object_or_404, redirect
 from django import forms
 from django.views.generic import ListView, FormView, DetailView, UpdateView, DeleteView
 from django.views.generic.edit import CreateView
@@ -10,7 +10,7 @@ from django.urls import reverse
 
 from . import util
 from .models import Entry
-from .forms import EntryForm
+from .forms import EntryForm, SearchForm
 
 import markdown2
 
@@ -20,12 +20,17 @@ class WikiListView(ListView):
     queryset = Entry.objects.all()
     template_name = "encyclopedia/index.html"
     context_object_name = "allEntries"
+    # form_class = SearchForm
     
     # def get(self, request, *args, **kwargs):
     #     context = {
     #         "allEntries": self.queryset
     #     }
     #     return render(request, self.template_name, context)
+
+# class WikiLayoutView(FormView):
+#     template_name = "encyclopedia/layout.html"
+#     form_class = SearchForm
 
 class WikiDetailView(DetailView):
     template_name = "encyclopedia/wiki_detail.html"
@@ -112,6 +117,40 @@ class WikiDeleteView(DeleteView):
     def get_success_url(self) -> str:
         return reverse('wiki:wiki-list')
 
+class WikiSearchView(ListView):
+    template_name = "encyclopedia/wiki_search.html"
+    model = Entry
+    paginate_by = 25
+    context_object_name = "searchResults"
+
+    def get_queryset(self):
+        search = self.request.GET.get('q')
+        object_list = Entry.objects.filter(Q(title__icontains=search))
+        return object_list
+
+    # def get_queryset(self):
+    #     search = self.request.GET.get('q')
+    #     try:
+    #         testerino = Entry.objects.get(title=search)
+    #         return redirect(testerino)
+    #     except:
+    #         object_list = Entry.objects.filter(Q(title__icontains=search))
+    #     return object_list
+
+
+
+    # stackoverflow try
+    # def get_queryset(self):
+    #     queryset = super().get_queryset()
+    #     q = self.request.GET.get("q")
+    #     if q:
+    #         queryset = queryset.filter(title__icontains=q)
+    #         # try:
+    #         #     queryset = queryset.get(title=)
+    #         # except expression as identifier:
+    #         #     pass
+    #     return queryset
+# ##############################################################
 
 # class NewEntryForm(forms.Form):
 #     entryTitle = forms.CharField(label="New Entry Title")

@@ -2,6 +2,9 @@ from django import forms
 
 from .models import Entry
 
+class SearchForm(forms.Form):
+    q = forms.CharField(label="Search", max_length=50)
+
 class EntryForm(forms.ModelForm):
     title   = forms.CharField(
                         label="Article Title",

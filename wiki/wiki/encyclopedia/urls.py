@@ -1,15 +1,14 @@
-from re import search
-from django.conf.urls import handler404
 from django.urls import path
 
-from . import views
 from .views import (
     WikiListView,
     WikiDetailView,
     WikiCreateView,
     WikiUpdateView,
-    WikiDeleteView
+    WikiDeleteView,
+    WikiSearchView
 )
+
 app_name = "wiki"
 urlpatterns = [
     # ex: /wiki/
@@ -17,12 +16,8 @@ urlpatterns = [
     path('wiki/<str:wikiEntry>/', WikiDetailView.as_view(), name="wiki-detail"),
     path('wiki/<str:wikiEntry>/update', WikiUpdateView.as_view(), name="wiki-update"),
     path('wiki/<str:wikiEntry>/delete', WikiDeleteView.as_view(), name="wiki-delete"),
-    path('wiki/create', WikiCreateView.as_view(), name="wiki-create")
+    path('wiki/create', WikiCreateView.as_view(), name="wiki-create"),
+    path('wiki/search_results', WikiSearchView.as_view(), name="wiki-search")
     # path('wiki/<str:wikiEntry>/update')
     # ex: /wiki/EntryPageName
-    # path("wiki/<str:entry>/", views.displayEntry, name="displayEntry"),
-    # path("wiki/search/", views.searchView, name="searchView")
-    # path("wiki/search/", SearchView.as_view(), name="searchView")
 ]
-
-# handler404 = 'custom404view'
