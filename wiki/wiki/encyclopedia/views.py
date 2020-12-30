@@ -1,7 +1,8 @@
 import re
+import random as rn
 from django.db.models import query
 from django.db.models.query_utils import Q
-from django.http import request
+from django.http import request, HttpResponseRedirect
 from django.shortcuts import render, get_object_or_404, redirect
 from django import forms
 from django.views.generic import ListView, FormView, DetailView, UpdateView, DeleteView
@@ -48,8 +49,16 @@ class WikiDetailView(DetailView):
         z = Entry.objects.get(title=self.kwargs.get("wikiEntry"))
         context["entryHTML"] = markdown2.markdown(z.content)
         return context
-    
-    
+
+def RandomPageView(request):
+    entryCount = Entry.objects.all().count()
+    randomID = rn.randint(0, entryCount)
+    randomEntry = Entry.objects.get(pk=randomID)
+    print(f"{entryCount=}, {randomID=}, {randomID=}")
+    return redirect('wiki:wiki-detail', wikiEntry=randomEntry.title)
+    # return HttpResponseRedirect(reverse('wiki:wiki-detail', kwargs={"wikiEntry": randomEntry}))
+
+
 class WikiCreateView(CreateView):
     template_name = "encyclopedia/wiki_create.html"
     queryset = Entry.objects.all()
@@ -120,13 +129,40 @@ class WikiDeleteView(DeleteView):
 class WikiSearchView(ListView):
     template_name = "encyclopedia/wiki_search.html"
     model = Entry
-    paginate_by = 25
+    # paginate_by = 25
     context_object_name = "searchResults"
+
+    # def get_queryset(self):
+    #     queryset = super().get_queryset()
+    #     search = self.request.GET.get('q')
+    #     query = queryset.filter(title__iexact=search)
+    #     print(f"{search=}, {query=}, {query.first().title}")
+    #     # if query.exists():
+    #     #     return redirect('wiki:wiki-detail', kwargs={"wikiEntry":str(query.first().title)} )
+    #     # return queryset.filter(Q(title__icontains=search))
+    #     object_list = Entry.objects.filter(Q(title__icontains=search))
+    #     print(f"{self.queryset=}")
+    #     return object_list
 
     def get_queryset(self):
         search = self.request.GET.get('q')
-        object_list = Entry.objects.filter(Q(title__icontains=search))
-        return object_list
+        # test = Entry.objects.filter(Q(title__icontains=search))
+        try:
+            return Entry.objects.filter(Q(title__icontains=search))
+        # except Entry.DoesNotExist:
+        except:
+            return "no such THINGY"
+
+    def get(self, request, *args, **kwargs):
+        print(f"{self.request.GET.get('q')=}")
+        print(f"{self.get_queryset().first().title=}")
+        print(f"{len(self.get_queryset())=}")
+        if len(self.get_queryset()) == 1:
+            if self.request.GET.get('q') == self.get_queryset().first().title:
+                return redirect('wiki:wiki-detail', wikiEntry=self.get_queryset().first().title)
+
+        context = {"searchResults": self.get_queryset()}
+        return render(request, self.template_name, context)
 
     # def get_queryset(self):
     #     search = self.request.GET.get('q')
