@@ -129,63 +129,24 @@ class WikiDeleteView(DeleteView):
 class WikiSearchView(ListView):
     template_name = "encyclopedia/wiki_search.html"
     model = Entry
-    # paginate_by = 25
+    paginate_by = 25
     context_object_name = "searchResults"
-
-    # def get_queryset(self):
-    #     queryset = super().get_queryset()
-    #     search = self.request.GET.get('q')
-    #     query = queryset.filter(title__iexact=search)
-    #     print(f"{search=}, {query=}, {query.first().title}")
-    #     # if query.exists():
-    #     #     return redirect('wiki:wiki-detail', kwargs={"wikiEntry":str(query.first().title)} )
-    #     # return queryset.filter(Q(title__icontains=search))
-    #     object_list = Entry.objects.filter(Q(title__icontains=search))
-    #     print(f"{self.queryset=}")
-    #     return object_list
 
     def get_queryset(self):
         search = self.request.GET.get('q')
-        # test = Entry.objects.filter(Q(title__icontains=search))
-        try:
-            return Entry.objects.filter(Q(title__icontains=search))
-        # except Entry.DoesNotExist:
-        except:
-            return "no such THINGY"
+        return Entry.objects.filter(Q(title__icontains=search))
 
     def get(self, request, *args, **kwargs):
-        print(f"{self.request.GET.get('q')=}")
-        print(f"{self.get_queryset().first().title=}")
-        print(f"{len(self.get_queryset())=}")
+        # Check if there is only one entry that matches 
         if len(self.get_queryset()) == 1:
+            # Check if it is an exact match, case sensitive
             if self.request.GET.get('q') == self.get_queryset().first().title:
                 return redirect('wiki:wiki-detail', wikiEntry=self.get_queryset().first().title)
 
         context = {"searchResults": self.get_queryset()}
         return render(request, self.template_name, context)
 
-    # def get_queryset(self):
-    #     search = self.request.GET.get('q')
-    #     try:
-    #         testerino = Entry.objects.get(title=search)
-    #         return redirect(testerino)
-    #     except:
-    #         object_list = Entry.objects.filter(Q(title__icontains=search))
-    #     return object_list
 
-
-
-    # stackoverflow try
-    # def get_queryset(self):
-    #     queryset = super().get_queryset()
-    #     q = self.request.GET.get("q")
-    #     if q:
-    #         queryset = queryset.filter(title__icontains=q)
-    #         # try:
-    #         #     queryset = queryset.get(title=)
-    #         # except expression as identifier:
-    #         #     pass
-    #     return queryset
 # ##############################################################
 
 # class NewEntryForm(forms.Form):
