@@ -50,11 +50,11 @@ class WikiDetailView(DetailView):
         context["entryHTML"] = markdown2.markdown(z.content)
         return context
 
-def RandomPageView(request):
+def randomPageView(request):
     entryCount = Entry.objects.all().count()
-    randomID = rn.randint(0, entryCount)
+    randomID = rn.randint(1, entryCount - 1)
     randomEntry = Entry.objects.get(pk=randomID)
-    print(f"{entryCount=}, {randomID=}, {randomID=}")
+    print(f"{entryCount=}, {randomID=}, {randomEntry=}")
     return redirect('wiki:wiki-detail', wikiEntry=randomEntry.title)
     # return HttpResponseRedirect(reverse('wiki:wiki-detail', kwargs={"wikiEntry": randomEntry}))
 
@@ -68,24 +68,6 @@ class WikiCreateView(CreateView):
         print(form.cleaned_data)
         return super().form_valid(form)
 
-    # Customizing GET and POST methods, inherited from View class
-
-    # def get(self, request, id=None, *args, **kwargs):
-    #     form = EntryForm()
-    #     context = {
-    #         "form": form
-    #     }
-    #     return render(request, self.template_name, context)
-    # def post(self, request, *args, **kwargs):
-    #     form = EntryForm(request.POST)
-    #     if form.is_valid():
-    #         form.save()
-    #     context = {
-    #         "form": form
-    #     }
-    #     return render(request, self.template_name, context)
-
-
 class WikiUpdateView(UpdateView):
     template_name = "encyclopedia/wiki_update.html"
     queryset = Entry.objects.all()
@@ -94,28 +76,6 @@ class WikiUpdateView(UpdateView):
     def get_object(self):
         x = self.kwargs.get("wikiEntry")
         return get_object_or_404(Entry, title=x)
-
-    # def form_valid(self, form):
-    #     print(form.cleaned_data)
-    #     return super().form_valid(form)
-
-    # Override Success Redirect:
-    # success_url = "whatever"
-    # def get_success_url(self) -> str:
-    #     return "whatever"
-
-    # populating with existing data?
-    # def render_initial_data(self, request, *args, **kwargs):
-    #     initial_data = {
-    #         "title": "fill",
-    #         "content": "fill"
-    #     }
-    #     obj = Entry.objects.get(title=self.kwargs.get("idk"))
-    #     form = EntryForm(request.POST, initial=initial_data, initial=obj)
-    #     context = {
-    #         "form": form
-    #     }
-    #     return render(request, self.template_name, context)
 
 class WikiDeleteView(DeleteView):
     template_name = "encyclopedia/wiki_delete.html"
@@ -148,117 +108,3 @@ class WikiSearchView(ListView):
 
 
 # ##############################################################
-
-# class NewEntryForm(forms.Form):
-#     entryTitle = forms.CharField(label="New Entry Title")
-#     # entryContent = forms.CharField(
-#     #     label="Entry Content in Markdown",
-#     #     widget=forms.Textarea(attrs={"rows":3, "cols":5}))
-#     entryContent = forms.Textarea()
-
-# class SearchForm(forms.Form):
-#     q = forms.CharField(label="search", max_length=64)
-
-# class IndexPageView(ListView):
-#     template_name = "index.html"
-#     # form_class = SearchForm
-#     model = Entry
-
-
-# def index(request):
-#     return render(request, "encyclopedia/index.html", {
-#         "allEntries": Entry.objects.all(),
-#         "searchbox": SearchForm()
-#     })
-
-# def displayEntry(request, entry):
-#     try:
-#         entryData = Entry.objects.get(title=entry)
-#         entryTitle = entryData.title
-#         entryHTML = markdown2.markdown(entryData.content)
-#         return render(request, "encyclopedia/displayEntry.html", {
-#             "entryTitle": entryTitle,
-#             "entryHTML": entryHTML
-#         })
-#     except:
-#         return render(request, "encyclopedia/displayEntry.html")
-
-# class EntryListView(ListView):
-#     model = Entry
-#     paginate_by = 100
-    
-#     def get_queryset(self):
-#         queryset = super().get_queryset()
-#         q = self.request.GET.get("q")
-#         if q:
-#             queryset = queryset.filter(title__icontains=q)
-#         return queryset
-
-# class EntryDetailView(DetailView):
-#     model = Entry
-
-# def searchView(request):
-#     searchedTerm = request.GET.get('q')
-#     try:
-#         exactMatch = Entry.objects.get(title=searchedTerm)
-#         entryTitle = exactMatch.title
-#         entryHTML = markdown2.markdown(exactMatch.content)
-#         return render(request, "encyclopedia/displayEntry.html", {
-#             "entryTitle": entryTitle,
-#             "entryHTML": entryHTML
-#         })
-#     except:
-#         try:
-#             searchResults = Entry.objects.filter(Q(title__icontains=searchedTerm))
-#             return render(request, "encyclopedia/searchResults.html", {
-#                 "searchResults": searchResults,
-#                 "searchedTerm": searchedTerm
-#             })
-#         except:
-#             return render(request, "encyclopedia/searchResults.html", {
-#             "emptyResults": f"No entries found matching: {searchedTerm}",
-#             "searchedTerm": searchedTerm
-#         })
-
-# class SearchView(ListView):
-#     template_name = "encyclopedia/searchResults.html"
-#     model = Entry
-#     context_object_name = "searchList"
-
-#     def get_queryset(self):
-#         searchedTerm = self.request.GET.get('q')
-#         try:
-#             searchResults = Entry.objects.get(title=searchedTerm)
-#             return searchResults
-#         except:
-#             try:
-#                 searchResults = Entry.objects.filter(Q(title__icontains=searchedTerm))
-#                 return searchResults
-#             except:
-#                 pass
-            
-#     def as_view():
-#         searchedTerm = self.request.GET.get('q')
-#         try:
-#             exactMatch = Entry.objects.get(title=searchedTerm)
-#             entryTitle = exactMatch.title
-#             entryHTML = markdown2.markdown(exactMatch.content)
-#             return render(request, "encyclopedia/displayEntry.html", {
-#                 "entryTitle": entryTitle,
-#                 "entryHTML": entryHTML,
-#             })
-#         except:
-#             searchResults = Entry.objects.filter(Q(title__icontains=searchedTerm))
-#             return render(request, "encyclopedia/searchResults.html", {
-#                 "searchResults": searchResults,
-#                 "searchedTerm": searchedTerm
-#             })
-#         else:
-#             return render(request, "encyclopedia/searchResults.html", {
-#                 "emptyResults": f"No entries found matching: {searchedTerm}",
-#                 "searchedTerm": searchedTerm
-#             })
-        
-        
-            
-        

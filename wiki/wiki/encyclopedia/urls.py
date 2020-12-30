@@ -1,7 +1,7 @@
 from django.urls import path
 
 from .views import (
-    RandomPageView, WikiListView,
+    randomPageView, WikiListView,
     WikiDetailView,
     WikiCreateView,
     WikiUpdateView,
@@ -18,7 +18,7 @@ urlpatterns = [
     path('wiki/<str:wikiEntry>/delete', WikiDeleteView.as_view(), name="wiki-delete"),
     path('wiki/create', WikiCreateView.as_view(), name="wiki-create"),
     path('wiki/search_results', WikiSearchView.as_view(), name="wiki-search"),
-    path('wiki/random/', RandomPageView, name="wiki-random" )
+    path('random/', randomPageView, name="wiki-random" )
     # path('wiki/<str:wikiEntry>/update')
     # ex: /wiki/EntryPageName
 ]
