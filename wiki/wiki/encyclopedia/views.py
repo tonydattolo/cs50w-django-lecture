@@ -51,12 +51,22 @@ class WikiDetailView(DetailView):
         return context
 
 def randomPageView(request):
+    # Get total # of entries
     entryCount = Entry.objects.all().count()
-    randomID = rn.randint(1, entryCount - 1)
-    randomEntry = Entry.objects.get(pk=randomID)
-    print(f"{entryCount=}, {randomID=}, {randomEntry=}")
+    
+    # Initialize set of unique Entry PKs
+    entryPKs = []
+
+    # Get all PKs (this excludes deleted ones)
+    for entry in Entry.objects.all():
+        currentPK = entry.pk
+        entryPKs.append(currentPK)
+
+    # Select a random Entry obect
+    randomEntry = Entry.objects.get(pk=rn.choice(entryPKs))
+
+    # Redirect to a the randomly selected detail page
     return redirect('wiki:wiki-detail', wikiEntry=randomEntry.title)
-    # return HttpResponseRedirect(reverse('wiki:wiki-detail', kwargs={"wikiEntry": randomEntry}))
 
 
 class WikiCreateView(CreateView):
